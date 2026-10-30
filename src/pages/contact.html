@@ -1,0 +1,68 @@
+<section class="page-hero">
+  <img src="assets/img/roadside.webp" alt="" width="1920" height="1072">
+  <div class="wrap">
+    <div class="crumbs"><a href="./">Home</a> / Contact</div>
+    <h1>Contact &amp; Quotes</h1>
+    <p>Freight quotes, storage, cross-dock, shop appointments, or a roadside emergency &mdash; it all starts with one call.</p>
+  </div>
+</section>
+
+<section class="section" id="quote" aria-labelledby="quote-title">
+  <div class="wrap contact-grid">
+    <div class="contact-card reveal">
+      <h3>Get in touch</h3>
+      <div class="contact-item"><span class="ico"><svg aria-hidden="true"><use href="#i-phone"/></svg></span><div><small>Call dispatch</small><a href="tel:+12095760327">(209) 576-0327</a></div></div>
+      <div class="contact-item"><span class="ico"><svg aria-hidden="true"><use href="#i-pin"/></svg></span><div><small>Yard &amp; office</small><strong>420 California Ave<br>Modesto, CA 95351</strong><br><a style="font-size:15px;color:var(--ice)" href="https://www.google.com/maps/dir/?api=1&amp;destination=420+California+Ave+Modesto+CA+95351" target="_blank" rel="noopener">Get directions &rarr;</a></div></div>
+      <div class="contact-item"><span class="ico"><svg aria-hidden="true"><use href="#i-doc"/></svg></span><div><small>Carrier IDs</small><strong>USDOT 145920<br>MC-147824</strong></div></div>
+    </div>
+
+    <div>
+      <div class="form-card reveal" data-quote-fallback>
+        <span class="eyebrow">Request a quote</span>
+        <h2 id="quote-title" style="font-size:clamp(32px,4vw,44px)">The fastest quote is a phone call</h2>
+        <p class="lead">Call <a href="tel:+12095760327"><strong>(209) 576-0327</strong></a> and have these details ready &mdash; we&rsquo;ll take it from there.</p>
+        <ol class="checklist">
+          <li><span><strong>Service needed</strong> &mdash; transportation, storage, cross-dock, repair, or roadside.</span></li>
+          <li><span><strong>Pickup &amp; delivery</strong> &mdash; cities or zip codes and your dates.</span></li>
+          <li><span><strong>Commodity &amp; weight</strong> &mdash; what you&rsquo;re shipping and how much.</span></li>
+          <li><span><strong>Temperature</strong> &mdash; frozen, chilled, or dry, plus your set point.</span></li>
+        </ol>
+        <a class="btn btn-blue" href="tel:+12095760327" style="margin-top:26px"><svg aria-hidden="true"><use href="#i-phone"/></svg> Call (209) 576-0327</a>
+      </div>
+
+      <form class="form-card reveal" data-quote-form data-endpoint="" hidden novalidate>
+        <span class="eyebrow">Request a quote</span>
+        <h2 style="font-size:clamp(32px,4vw,44px)">Tell us about your freight</h2>
+        <div class="form-grid">
+          <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" autocomplete="name" required></div>
+          <div class="field"><label for="f-company">Company</label><input id="f-company" name="company" autocomplete="organization"></div>
+          <div class="field"><label for="f-phone">Phone</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" required></div>
+          <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field full"><label for="f-service">Service</label>
+            <select id="f-service" name="service">
+              <option>Transportation</option><option>Storage</option><option>Cross Dock</option><option>Truck &amp; Trailer Repair</option><option>Roadside Service</option>
+            </select></div>
+          <div class="field"><label for="f-from">Pickup location</label><input id="f-from" name="pickup"></div>
+          <div class="field"><label for="f-to">Delivery location</label><input id="f-to" name="delivery"></div>
+          <div class="field full"><label for="f-msg">Details (commodity, weight, temperature, dates)</label><textarea id="f-msg" name="details" rows="4"></textarea></div>
+          <div class="hp" aria-hidden="true"><label>Leave blank <input name="_hp" tabindex="-1" autocomplete="off"></label></div>
+        </div>
+        <button class="btn btn-blue" type="submit" style="margin-top:20px">Send request <svg aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+        <p class="form-note">Urgent or roadside? Call <a href="tel:+12095760327">(209) 576-0327</a>.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" aria-labelledby="map-title">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Location</span>
+      <h2 id="map-title">420 California Ave, Modesto</h2>
+    </div>
+    <div class="map reveal">
+      <iframe title="Map to 420 California Ave, Modesto, CA" src="https://www.google.com/maps?q=420+California+Ave,+Modesto,+CA+95351&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>

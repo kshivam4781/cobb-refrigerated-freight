@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kshivam4781.github.io/cobb-refrigerated-freight/sitemap.xml

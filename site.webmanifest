@@ -1,0 +1,20 @@
+{
+  "name": "Cobb Refrigerated Freight",
+  "short_name": "Cobb Freight",
+  "start_url": "/cobb-refrigerated-freight/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0B2A5B",
+  "icons": [
+    {
+      "src": "assets/brand/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/brand/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
