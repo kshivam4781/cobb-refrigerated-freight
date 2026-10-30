@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..900&family=Inter:wght@400..700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css?v=202610291853">
+  <link rel="stylesheet" href="assets/css/styles.css?v=202610291856">
   <script>document.documentElement.classList.add('js')</script>
   <script type="application/ld+json">
   {
@@ -161,9 +161,9 @@
       <div class="quote-card" id="hero-quote" data-form-wrap>
         <h2>Request a rate</h2>
         <p class="qc-sub">Tell us where it&rsquo;s going. We&rsquo;ll take it from there.</p>
-    <form class="form" data-quote data-endpoint="https://formsubmit.co/ajax/shivam@skytransportsolutions.com" novalidate>
+    <form class="form" data-quote data-w3f-key="" data-fs-email="shivam@skytransportsolutions.com" novalidate>
       <fieldset style="border:0;margin:0;padding:0"><legend class="sr-only">Service</legend><div class="seg"><label><input type="radio" name="service" value="Transportation" checked><span>Freight</span></label><label><input type="radio" name="service" value="Storage"><span>Storage</span></label><label><input type="radio" name="service" value="Truck & Trailer Repair"><span>Repair</span></label></div></fieldset><div class="form-row"><div class="field"><label for="h-pickup">Pickup city / ZIP</label><input id="h-pickup" name="pickup" type="text" placeholder="City or ZIP" required></div><div class="field"><label for="h-delivery">Delivery city / ZIP</label><input id="h-delivery" name="delivery" type="text" placeholder="City or ZIP" required></div></div><div class="form-row"><div class="field"><label for="h-name">Your name</label><input id="h-name" name="name" type="text" autocomplete="name" required></div><div class="field"><label for="h-phone">Phone</label><input id="h-phone" name="phone" type="tel" autocomplete="tel" placeholder="(209) 555-0100" required></div></div><div class="field"><label for="h-email">Email</label><input id="h-email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required></div>
-      <div class="hp" aria-hidden="true"><label>Leave this empty <input name="_honey" tabindex="-1" autocomplete="off"></label></div>
+      <div class="hp" aria-hidden="true"><label>Leave this empty <input name="botcheck" tabindex="-1" autocomplete="off"></label></div>
       <div class="form-error" role="alert">Sorry &mdash; that didn&rsquo;t go through. Please call <a href="tel:+12095760327">(209) 576-0327</a>.</div>
       <button class="btn btn-primary btn-block" type="submit">Get my quote <svg class="ico i-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
       <p class="form-foot"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Your request goes directly to our team.</p>
@@ -525,9 +525,9 @@
     <button class="dialog-close" type="button" data-close-quote aria-label="Close"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
   </div>
   <div class="dialog-body" data-form-wrap>
-    <form class="form" data-quote data-endpoint="https://formsubmit.co/ajax/shivam@skytransportsolutions.com" novalidate>
+    <form class="form" data-quote data-w3f-key="" data-fs-email="shivam@skytransportsolutions.com" novalidate>
       <div class="field"><label for="d-service">Service needed</label><select id="d-service" name="service" required><option>Transportation</option><option>Storage</option><option>Cross Dock</option><option>Truck &amp; Trailer Repair</option><option>Roadside Service</option></select></div><div class="form-row"><div class="field"><label for="d-name">Full name</label><input id="d-name" name="name" type="text" autocomplete="name" required></div><div class="field"><label for="d-company">Company <span class="opt">(optional)</span></label><input id="d-company" name="company" type="text" autocomplete="organization"></div></div><div class="form-row"><div class="field"><label for="d-phone">Phone</label><input id="d-phone" name="phone" type="tel" autocomplete="tel" placeholder="(209) 555-0100" required></div><div class="field"><label for="d-email">Email</label><input id="d-email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required></div></div><div class="form-row"><div class="field"><label for="d-pickup">Pickup location <span class="opt">(optional)</span></label><input id="d-pickup" name="pickup" type="text" placeholder="City, state or ZIP"></div><div class="field"><label for="d-delivery">Delivery location <span class="opt">(optional)</span></label><input id="d-delivery" name="delivery" type="text" placeholder="City, state or ZIP"></div></div><div class="form-row"><div class="field"><label for="d-commodity">Commodity &amp; weight <span class="opt">(optional)</span></label><input id="d-commodity" name="commodity" type="text" placeholder="e.g. Produce, 40,000 lb"></div><div class="field"><label for="d-temp">Temperature <span class="opt">(optional)</span></label><select id="d-temp" name="temperature"><option value="">Select…</option><option>Frozen</option><option>Chilled / fresh</option><option>Dry / ambient</option><option>Not applicable</option></select></div></div><div class="field"><label for="d-details">Details <span class="opt">(optional)</span></label><textarea id="d-details" name="details" rows="4" placeholder="Dates, number of loads, equipment, truck/trailer issue…"></textarea></div>
-      <div class="hp" aria-hidden="true"><label>Leave this empty <input name="_honey" tabindex="-1" autocomplete="off"></label></div>
+      <div class="hp" aria-hidden="true"><label>Leave this empty <input name="botcheck" tabindex="-1" autocomplete="off"></label></div>
       <div class="form-error" role="alert">Sorry &mdash; that didn&rsquo;t go through. Please call <a href="tel:+12095760327">(209) 576-0327</a>.</div>
       <button class="btn btn-primary btn-block" type="submit">Send request <svg class="ico i-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
       <p class="form-foot"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Your request goes directly to our team.</p>
@@ -541,6 +541,6 @@
   </div>
 </dialog>
 
-<script src="assets/js/main.js?v=202610291853" defer></script>
+<script src="assets/js/main.js?v=202610291856" defer></script>
 </body>
 </html>

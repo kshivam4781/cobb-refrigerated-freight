@@ -21,8 +21,10 @@ SRC = ROOT / "src"
 SITE = "https://kshivam4781.github.io/cobb-refrigerated-freight/"
 BASE_PATH = "/cobb-refrigerated-freight/"
 
-# Where quote requests are emailed (FormSubmit AJAX endpoint).
-FORM_ENDPOINT = "https://formsubmit.co/ajax/shivam@skytransportsolutions.com"
+# Where quote requests are emailed. Forms try Web3Forms first (when an access key is set),
+# then fall back to FormSubmit. Get a free Web3Forms key at https://web3forms.com for QUOTE_EMAIL.
+QUOTE_EMAIL = "shivam@skytransportsolutions.com"
+WEB3FORMS_ACCESS_KEY = ""
 
 PAGES = {
     "index.html": {
@@ -116,9 +118,9 @@ def quote_form(p, variant):
             field(p, "details", "Details", "textarea", placeholder="Dates, number of loads, equipment, truck/trailer issue…"),
         ]
         cta = "Send request"
-    return f"""    <form class="form" data-quote data-endpoint="{FORM_ENDPOINT}" novalidate>
+    return f"""    <form class="form" data-quote data-w3f-key="{WEB3FORMS_ACCESS_KEY}" data-fs-email="{QUOTE_EMAIL}" novalidate>
       {''.join(rows)}
-      <div class="hp" aria-hidden="true"><label>Leave this empty <input name="_honey" tabindex="-1" autocomplete="off"></label></div>
+      <div class="hp" aria-hidden="true"><label>Leave this empty <input name="botcheck" tabindex="-1" autocomplete="off"></label></div>
       <div class="form-error" role="alert">Sorry &mdash; that didn&rsquo;t go through. Please call <a href="tel:+12095760327">(209) 576-0327</a>.</div>
       <button class="btn btn-primary btn-block" type="submit">{cta} <svg class="ico i-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
       <p class="form-foot"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Your request goes directly to our team.</p>

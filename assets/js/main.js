@@ -85,7 +85,46 @@
     dialog.addEventListener('click', function (e) { if (e.target === dialog) dialog.close(); });
   }
 
-  // ---------- Quote forms -> email (FormSubmit) ----------
+  // ---------- Quote forms -> email ----------
+  // Tries Web3Forms (if an access key is configured), then FormSubmit. Only a confirmed
+  // success shows the thank-you state; otherwise the visitor is asked to call.
+  function postJSON(url, payload) {
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (!r.ok || String(j.success) !== 'true') throw new Error(j.message || 'send failed');
+        return j;
+      });
+    });
+  }
+
+  function sendQuote(form, data) {
+    var subject = 'Website quote request: ' + (data.service || 'General') + ' — ' + (data.name || '');
+    var senders = [];
+    var key = form.getAttribute('data-w3f-key');
+    var email = form.getAttribute('data-fs-email');
+    if (key) {
+      senders.push(function () {
+        return postJSON('https://api.web3forms.com/submit', Object.assign({
+          access_key: key, subject: subject, from_name: 'Cobb Refrigerated Freight website'
+        }, data));
+      });
+    }
+    if (email) {
+      senders.push(function () {
+        return postJSON('https://formsubmit.co/ajax/' + email, Object.assign({
+          _subject: subject, _template: 'table', _captcha: 'false'
+        }, data));
+      });
+    }
+    return senders.reduce(function (chain, send) {
+      return chain.catch(function () { return send(); });
+    }, Promise.reject(new Error('no sender')));
+  }
+
   doc.querySelectorAll('form[data-quote]').forEach(function (form) {
     var wrap = form.closest('[data-form-wrap]');
     var errorBox = form.querySelector('.form-error');
@@ -98,25 +137,12 @@
 
       var data = {};
       new FormData(form).forEach(function (value, key) { if (String(value).trim()) data[key] = String(value).trim(); });
-      if (data._honey) { wrap.classList.add('sent'); return; }
-
-      data._subject = 'Website quote request: ' + (data.service || 'General') + ' — ' + (data.name || '');
-      data._template = 'table';
-      data._captcha = 'false';
+      if (data.botcheck) { wrap.classList.add('sent'); return; }
       data.submitted_from = window.location.href;
 
       submit.setAttribute('aria-busy', 'true');
-      fetch(form.getAttribute('data-endpoint'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(data)
-      })
-        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
-        .then(function (res) {
-          if (!res.ok || String(res.j.success) !== 'true') throw new Error(res.j.message || 'send failed');
-          form.reset();
-          wrap.classList.add('sent');
-        })
+      sendQuote(form, data)
+        .then(function () { form.reset(); wrap.classList.add('sent'); })
         .catch(function () { errorBox.classList.add('show'); })
         .finally(function () { submit.removeAttribute('aria-busy'); });
     });

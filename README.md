@@ -27,7 +27,8 @@ The generated `*.html`, `sitemap.xml`, `robots.txt`, and `site.webmanifest` in t
 
 ### Quote forms
 
-Every quote form (hero card, quote dialog, contact page) posts to [FormSubmit](https://formsubmit.co), which emails the
+Every quote form (hero card, quote dialog, contact page) emails requests to `QUOTE_EMAIL` in `build.py`. It sends through
+[Web3Forms](https://web3forms.com) when `WEB3FORMS_ACCESS_KEY` is set, and falls back to [FormSubmit](https://formsubmit.co), which emails the
 request to the address in `FORM_ENDPOINT` at the top of `build.py`. To change the recipient, edit that line, run
 `python build.py`, push, and confirm the one-time activation email FormSubmit sends to the new address.
 
