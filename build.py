@@ -24,7 +24,7 @@ BASE_PATH = "/cobb-refrigerated-freight/"
 # Where quote requests are emailed. Forms try Web3Forms first (when an access key is set),
 # then fall back to FormSubmit. Get a free Web3Forms key at https://web3forms.com for QUOTE_EMAIL.
 QUOTE_EMAIL = "shivam@skytransportsolutions.com"
-WEB3FORMS_ACCESS_KEY = ""
+WEB3FORMS_ACCESS_KEY = "4987b808-a6e5-4209-b974-59d506e02fe9"
 
 PAGES = {
     "index.html": {
