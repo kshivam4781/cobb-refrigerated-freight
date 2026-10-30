@@ -47,6 +47,21 @@ PAGES = {
         "title": "Contact & Request a Quote | Cobb Refrigerated Freight",
         "description": "Request a refrigerated freight, storage, or cross-dock quote, or call for truck repair and roadside service: (209) 576-0327. 420 California Ave, Modesto, CA 95351.",
     },
+    "privacy.html": {
+        "nav": "",
+        "title": "Privacy Policy | Cobb Refrigerated Freight",
+        "description": "How Cobb Refrigerated Freight Inc collects, uses, and protects information submitted through this website, including California (CCPA/CalOPPA) disclosures.",
+    },
+    "cookies.html": {
+        "nav": "",
+        "title": "Cookie Policy | Cobb Refrigerated Freight",
+        "description": "This website uses no tracking or advertising cookies. Learn what is stored in your browser and how to control embedded Google Maps.",
+    },
+    "terms.html": {
+        "nav": "",
+        "title": "Terms of Use | Cobb Refrigerated Freight",
+        "description": "Terms for using the Cobb Refrigerated Freight Inc website, including how quote requests work and governing law.",
+    },
     "404.html": {
         "nav": "",
         "header": "solid",
@@ -73,18 +88,49 @@ def field(p, name, label, kind="text", required=False, auto="", placeholder="", 
     return f'<div class="field"><label for="{p}-{name}">{label}{opt}</label>{ctrl}</div>'
 
 
+def select(p, name, label, options, required=False, placeholder="Select…"):
+    req = " required" if required else ""
+    opt = "" if required else ' <span class="opt">(optional)</span>'
+    opts = f'<option value="">{placeholder}</option>' + "".join(f"<option>{o}</option>" for o in options)
+    return f'<div class="field"><label for="{p}-{name}">{label}{opt}</label><select id="{p}-{name}" name="{name}"{req}>{opts}</select></div>'
+
+
+# Hero card tabs: (value, tab label, icon, card title, card subtitle, button text)
+COMPACT_TABS = [
+    ("Transportation", "Freight", "i-truck", "Request a freight rate",
+     "Tell us where it&rsquo;s going. We&rsquo;ll take it from there.", "Get my freight quote"),
+    ("Storage", "Storage", "i-warehouse", "Reserve storage space",
+     "What are you storing, and how cold?", "Check storage availability"),
+    ("Truck & Trailer Repair", "Repair", "i-wrench", "Book shop service",
+     "Tell us about the unit and the problem.", "Request service"),
+]
+TEMPS = ["Frozen", "Chilled / fresh", "Dry / ambient"]
+UNITS = ["Tractor", "Trailer", "Reefer unit", "Not sure"]
+
+
 def quote_form(p, variant):
-    """Quote request form. 'compact' fits the hero card; 'full' is used in the dialog and contact page."""
+    """Quote request form. 'compact' fits the hero card; 'full' is used in the dialog and contact page.
+    Rows marked data-when="A|B" only show (and submit) for those services."""
     if variant == "compact":
         svc = "".join(
-            f'<label><input type="radio" name="service" value="{v}"{" checked" if i == 0 else ""}><span>{t}</span></label>'
-            for i, (v, t) in enumerate((("Transportation", "Freight"), ("Storage", "Storage"), ("Truck & Trailer Repair", "Repair")))
+            f'<label><input type="radio" name="service" value="{v.replace("&", "&amp;")}"{" checked" if i == 0 else ""}'
+            f' data-i="{i}" data-icon="{ico}" data-title="{title}" data-sub="{sub}" data-cta="{cta}">'
+            f'<span><svg class="ico" aria-hidden="true"><use href="#{ico}"/></svg>{t}</span></label>'
+            for i, (v, t, ico, title, sub, cta) in enumerate(COMPACT_TABS)
         )
         rows = [
-            f'<fieldset style="border:0;margin:0;padding:0"><legend class="sr-only">Service</legend><div class="seg">{svc}</div></fieldset>',
-            '<div class="form-row">'
+            f'<fieldset class="seg-wrap"><legend class="sr-only">Service</legend><div class="seg" style="--i:0"><span class="seg-pill" aria-hidden="true"></span>{svc}</div></fieldset>',
+            '<div class="form-row" data-when="Transportation">'
             + field(p, "pickup", "Pickup city / ZIP", required=True, placeholder="City or ZIP")
             + field(p, "delivery", "Delivery city / ZIP", required=True, placeholder="City or ZIP")
+            + "</div>",
+            '<div class="form-row" data-when="Storage" hidden>'
+            + field(p, "pallets", "Pallets (approx.)", "number", required=True, placeholder="e.g. 12")
+            + select(p, "storage_temp", "Keep it", TEMPS, required=True)
+            + "</div>",
+            '<div class="form-row" data-when="Truck &amp; Trailer Repair" hidden>'
+            + select(p, "unit_type", "Unit type", UNITS, required=True)
+            + field(p, "problem", "What&rsquo;s wrong?", required=True, placeholder="e.g. air leak, brakes")
             + "</div>",
             '<div class="form-row">'
             + field(p, "name", "Your name", required=True, auto="name")
@@ -92,7 +138,7 @@ def quote_form(p, variant):
             + "</div>",
             field(p, "email", "Email", "email", required=True, auto="email", placeholder="you@company.com"),
         ]
-        cta = "Get my quote"
+        cta = COMPACT_TABS[0][5]
     else:
         opts = "".join(f"<option>{s.replace('&', '&amp;')}</option>" for s in SERVICES)
         rows = [
@@ -105,25 +151,31 @@ def quote_form(p, variant):
             + field(p, "phone", "Phone", "tel", required=True, auto="tel", placeholder="(209) 555-0100")
             + field(p, "email", "Email", "email", required=True, auto="email", placeholder="you@company.com")
             + "</div>",
-            '<div class="form-row">'
+            '<div class="form-row" data-when="Transportation|Cross Dock">'
             + field(p, "pickup", "Pickup location", placeholder="City, state or ZIP")
             + field(p, "delivery", "Delivery location", placeholder="City, state or ZIP")
             + "</div>",
-            '<div class="form-row">'
-            + field(p, "commodity", "Commodity &amp; weight", placeholder="e.g. Produce, 40,000 lb")
-            + f'<div class="field"><label for="{p}-temp">Temperature <span class="opt">(optional)</span></label>'
-            f'<select id="{p}-temp" name="temperature"><option value="">Select…</option><option>Frozen</option>'
-            f"<option>Chilled / fresh</option><option>Dry / ambient</option><option>Not applicable</option></select></div>"
+            '<div class="form-row" data-when="Storage" hidden>'
+            + field(p, "pallets", "Pallets (approx.)", "number", placeholder="e.g. 12")
+            + field(p, "start_date", "Needed from", "date")
             + "</div>",
-            field(p, "details", "Details", "textarea", placeholder="Dates, number of loads, equipment, truck/trailer issue…"),
+            '<div class="form-row" data-when="Transportation|Storage|Cross Dock">'
+            + field(p, "commodity", "Commodity &amp; weight", placeholder="e.g. Produce, 40,000 lb")
+            + select(p, "temperature", "Temperature", TEMPS + ["Not applicable"])
+            + "</div>",
+            '<div class="form-row" data-when="Truck &amp; Trailer Repair|Roadside Service" hidden>'
+            + select(p, "unit_type", "Unit type", UNITS)
+            + field(p, "location", "Where is it?", placeholder="Our shop, or highway &amp; mile marker")
+            + "</div>",
+            field(p, "details", "Details", "textarea", placeholder="Dates, number of loads, equipment, what&rsquo;s wrong with the truck…"),
         ]
         cta = "Send request"
     return f"""    <form class="form" data-quote data-w3f-key="{WEB3FORMS_ACCESS_KEY}" data-fs-email="{QUOTE_EMAIL}" novalidate>
       {''.join(rows)}
       <div class="hp" aria-hidden="true"><label>Leave this empty <input name="botcheck" tabindex="-1" autocomplete="off"></label></div>
       <div class="form-error" role="alert">Sorry, that didn&rsquo;t go through. Please call <a href="tel:+12095760327">(209) 576-0327</a>.</div>
-      <button class="btn btn-primary btn-block" type="submit">{cta} <svg class="ico i-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-      <p class="form-foot"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Your request goes directly to our team.</p>
+      <button class="btn btn-primary btn-block" type="submit"><span data-cta>{cta}</span> <svg class="ico i-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <p class="form-foot"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg><span>Your request goes directly to our team. See our <a href="privacy.html">Privacy Policy</a>.</span></p>
     </form>
     <div class="form-success" role="status">
       <div class="check"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></div>

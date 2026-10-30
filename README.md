@@ -12,6 +12,9 @@ Static website for **Cobb Refrigerated Freight Inc**, Modesto, CA (USDOT 145920 
 | Services (Storage, Transportation, Cross Dock, Truck & Trailer Repair, Roadside Service) | `services.html` |
 | About & Safety record | `about.html` |
 | Contact & Quote | `contact.html` |
+| Privacy Policy (incl. California CCPA/CalOPPA disclosures) | `privacy.html` |
+| Cookie Policy | `cookies.html` |
+| Terms of Use | `terms.html` |
 | Not found | `404.html` |
 
 ## Editing
@@ -40,6 +43,13 @@ If both fail, the visitor sees an error asking them to call (209) 576-0327, so n
 
 To use a domain like `cobbrefrigerated.com`: add it under **Settings → Pages → Custom domain**, then update `SITE` and
 `BASE_PATH` at the top of `build.py` and rebuild.
+
+### Cookies & privacy
+
+The site sets no cookies of its own and runs no analytics. A cookie notice stores the visitor's choice in
+`localStorage` (`cobb_consent`); the Google Maps embed on the contact page loads only after "Accept all" or a click on
+"Load map". Browsers sending Global Privacy Control or Do Not Track default to "Essential only". Fonts are self-hosted
+in `assets/fonts/`. If you add analytics or other third-party tools, update `privacy.html` and `cookies.html` first.
 
 ## Brand
 

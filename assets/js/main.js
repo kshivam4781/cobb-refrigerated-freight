@@ -64,9 +64,10 @@
     if (nav && nav.classList.contains('open')) setMenu(false);
     var wrap = dialog.querySelector('[data-form-wrap]');
     wrap.classList.remove('sent');
-    if (service) {
-      var sel = dialog.querySelector('select[name="service"]');
-      if (sel) sel.value = service;
+    var sel = dialog.querySelector('select[name="service"]');
+    if (service && sel) {
+      sel.value = service;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
     }
     if (typeof dialog.showModal === 'function') {
       dialog.showModal();
@@ -124,6 +125,48 @@
       return chain.catch(function () { return send(); });
     }, Promise.reject(new Error('no sender')));
   }
+
+  // Show only the fields that fit the chosen service. Hidden rows are disabled so they
+  // are neither validated nor sent. The hero card also swaps its title, icon, and button.
+  function applyService(form, animate) {
+    var radio = form.querySelector('input[name="service"]:checked');
+    var sel = form.querySelector('select[name="service"]');
+    var value = radio ? radio.value : (sel ? sel.value : '');
+    form.querySelectorAll('[data-when]').forEach(function (row) {
+      var on = row.getAttribute('data-when').split('|').indexOf(value) > -1;
+      var was = !row.hidden;
+      row.hidden = !on;
+      row.querySelectorAll('input, select, textarea').forEach(function (el) { el.disabled = !on; });
+      if (on && !was && animate && !reduceMotion) {
+        row.classList.remove('swap-in'); void row.offsetWidth; row.classList.add('swap-in');
+      }
+    });
+    if (!radio) return;
+    var seg = radio.closest('.seg');
+    if (seg) seg.style.setProperty('--i', radio.getAttribute('data-i'));
+    var card = form.closest('.quote-card');
+    var cta = form.querySelector('span[data-cta]');
+    if (cta) cta.textContent = radio.getAttribute('data-cta');
+    if (!card) return;
+    var title = card.querySelector('[data-qc-title]');
+    var sub = card.querySelector('[data-qc-sub]');
+    var icon = card.querySelector('[data-qc-icon]');
+    if (title) title.innerHTML = radio.getAttribute('data-title');
+    if (sub) sub.innerHTML = radio.getAttribute('data-sub');
+    if (icon) icon.setAttribute('href', '#' + radio.getAttribute('data-icon'));
+    if (animate && !reduceMotion) {
+      var head = card.querySelector('.qc-head');
+      head.classList.remove('swap-in'); void head.offsetWidth; head.classList.add('swap-in');
+    }
+  }
+
+  doc.querySelectorAll('form[data-quote]').forEach(function (form) {
+    applyService(form, false);
+    form.addEventListener('change', function (e) {
+      if (e.target.name === 'service') applyService(form, true);
+    });
+    form.addEventListener('reset', function () { setTimeout(function () { applyService(form, false); }, 0); });
+  });
 
   doc.querySelectorAll('form[data-quote]').forEach(function (form) {
     var wrap = form.closest('[data-form-wrap]');
@@ -226,6 +269,58 @@
     }, { rootMargin: '-45% 0px -50% 0px' });
     Object.keys(map).forEach(function (id) { var s = doc.getElementById(id); if (s) so.observe(s); });
   }
+
+  // ---------- Cookie choice & consent-gated embeds ----------
+  // The only thing stored is the visitor's choice, in localStorage under "cobb_consent"
+  // ("all" or "essential"). Google Maps embeds load only with "all" or a click on "Load map".
+  var CONSENT_KEY = 'cobb_consent';
+  var banner = doc.getElementById('consent');
+  function readConsent() {
+    try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; }
+  }
+  function writeConsent(v) {
+    try { localStorage.setItem(CONSENT_KEY, v); } catch (e) { /* storage blocked: choice lasts for this page */ }
+  }
+  function loadMap(box) {
+    if (!box || box.querySelector('iframe')) return;
+    var f = doc.createElement('iframe');
+    f.src = box.getAttribute('data-map');
+    f.title = box.getAttribute('data-map-title') || 'Map';
+    f.loading = 'lazy';
+    f.referrerPolicy = 'no-referrer-when-downgrade';
+    box.innerHTML = '';
+    box.appendChild(f);
+  }
+  function applyConsent(v) {
+    if (v === 'all') doc.querySelectorAll('[data-map]').forEach(loadMap);
+  }
+  function showBanner(show) {
+    if (!banner) return;
+    banner.hidden = !show;
+    body.classList.toggle('consent-open', show);
+    if (show) requestAnimationFrame(function () { banner.classList.add('in'); });
+    else banner.classList.remove('in');
+  }
+  var privacySignal = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1' || window.doNotTrack === '1';
+  var consent = readConsent();
+  if (!consent && privacySignal) { consent = 'essential'; writeConsent(consent); }
+  applyConsent(consent);
+  if (!consent) setTimeout(function () { showBanner(true); }, 700);
+
+  doc.addEventListener('click', function (e) {
+    var choice = e.target.closest('[data-consent]');
+    if (choice) {
+      var v = choice.getAttribute('data-consent');
+      var mapsLoaded = doc.querySelector('[data-map] iframe');
+      writeConsent(v);
+      showBanner(false);
+      if (v === 'essential' && mapsLoaded) window.location.reload();
+      else applyConsent(v);
+    }
+    if (e.target.closest('[data-consent-open]')) { e.preventDefault(); showBanner(true); }
+    var load = e.target.closest('[data-load-map]');
+    if (load) loadMap(load.closest('[data-map]'));
+  });
 
   // ---------- Footer year ----------
   doc.querySelectorAll('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });

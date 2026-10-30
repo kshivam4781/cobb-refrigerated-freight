@@ -21,9 +21,9 @@
   <link rel="icon" href="assets/brand/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..900&family=Inter:wght@400..700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="preload" href="assets/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/fonts.css?v={{version}}">
   <link rel="stylesheet" href="assets/css/styles.css?v={{version}}">
   <script>document.documentElement.classList.add('js')</script>
   <script type="application/ld+json">
@@ -180,7 +180,13 @@
     </div>
     <div class="footer-bottom">
       <span>&copy; <span data-year>2026</span> Cobb Refrigerated Freight Inc. All rights reserved.</span>
-      <a href="https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&amp;query_type=queryCarrierSnapshot&amp;query_param=USDOT&amp;query_string=145920" target="_blank" rel="noopener">Verify our FMCSA record</a>
+      <nav class="legal-links" aria-label="Legal">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="cookies.html">Cookie Policy</a>
+        <a href="terms.html">Terms of Use</a>
+        <button type="button" data-consent-open>Cookie settings</button>
+        <a href="https://safer.fmcsa.dot.gov/query.asp?searchtype=ANY&amp;query_type=queryCarrierSnapshot&amp;query_param=USDOT&amp;query_string=145920" target="_blank" rel="noopener">FMCSA record</a>
+      </nav>
     </div>
   </div>
   <div class="footer-word" aria-hidden="true">COBB</div>
@@ -190,6 +196,20 @@
   <a class="btn btn-ice" href="tel:+12095760327"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>Call</a>
   <button class="btn btn-glass" type="button" data-open-quote>Get a Quote</button>
 </div>
+
+<section class="consent" id="consent" aria-labelledby="consent-title" hidden>
+  <div class="consent-body">
+    <span class="consent-ico"><svg class="ico" aria-hidden="true"><use href="#i-shield"/></svg></span>
+    <div>
+      <h2 id="consent-title">Your privacy</h2>
+      <p>We don&rsquo;t use tracking or advertising cookies. Embedded Google Maps can set cookies, so it only loads if you allow it. <a href="cookies.html">Cookie Policy</a></p>
+    </div>
+  </div>
+  <div class="consent-actions">
+    <button class="btn btn-line" type="button" data-consent="essential">Essential only</button>
+    <button class="btn btn-primary" type="button" data-consent="all">Accept all</button>
+  </div>
+</section>
 
 <dialog class="dialog" id="quote-dialog" aria-labelledby="dlg-title">
   <div class="dialog-head">
