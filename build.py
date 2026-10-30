@@ -1,7 +1,7 @@
 """Builds the static site: wraps src/pages/*.html in src/layout.html and writes them to the repo root.
 
 Run:  python build.py
-Then commit the generated .html files — GitHub Pages serves the repo root as-is.
+Then commit the generated .html files; GitHub Pages serves the repo root as-is.
 
 Template tokens available in pages and layout:
   {{form:<prefix>:<compact|full>}}  quote form that emails FORM_ENDPOINT
@@ -40,7 +40,7 @@ PAGES = {
     "about.html": {
         "nav": "about",
         "title": "About Us & Safety Record | Cobb Refrigerated Freight, Modesto CA",
-        "description": "Cobb Refrigerated Freight Inc — USDOT 145920, MC-147824, Satisfactory FMCSA safety rating. An asset-based refrigerated carrier in Modesto, California.",
+        "description": "Cobb Refrigerated Freight Inc. USDOT 145920, MC-147824, Satisfactory FMCSA safety rating. An asset-based refrigerated carrier in Modesto, California.",
     },
     "contact.html": {
         "nav": "contact",
@@ -121,14 +121,14 @@ def quote_form(p, variant):
     return f"""    <form class="form" data-quote data-w3f-key="{WEB3FORMS_ACCESS_KEY}" data-fs-email="{QUOTE_EMAIL}" novalidate>
       {''.join(rows)}
       <div class="hp" aria-hidden="true"><label>Leave this empty <input name="botcheck" tabindex="-1" autocomplete="off"></label></div>
-      <div class="form-error" role="alert">Sorry &mdash; that didn&rsquo;t go through. Please call <a href="tel:+12095760327">(209) 576-0327</a>.</div>
+      <div class="form-error" role="alert">Sorry, that didn&rsquo;t go through. Please call <a href="tel:+12095760327">(209) 576-0327</a>.</div>
       <button class="btn btn-primary btn-block" type="submit">{cta} <svg class="ico i-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
       <p class="form-foot"><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg>Your request goes directly to our team.</p>
     </form>
     <div class="form-success" role="status">
       <div class="check"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></div>
       <h3>Request received</h3>
-      <p>Thanks &mdash; our team will reach out shortly. Need it sooner? Call <a href="tel:+12095760327">(209) 576-0327</a>.</p>
+      <p>Thanks! Our team will reach out shortly. Need it sooner? Call <a href="tel:+12095760327">(209) 576-0327</a>.</p>
       <button class="btn btn-line" type="button" data-reset-form style="margin-top:14px">Send another request</button>
     </div>"""
 

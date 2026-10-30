@@ -1,4 +1,4 @@
-// Cobb Refrigerated Freight — site behavior
+// Cobb Refrigerated Freight: site behavior
 (function () {
   var doc = document;
   var body = doc.body;
@@ -102,7 +102,7 @@
   }
 
   function sendQuote(form, data) {
-    var subject = 'Website quote request: ' + (data.service || 'General') + ' — ' + (data.name || '');
+    var subject = 'Website quote request: ' + (data.service || 'General') + ' from ' + (data.name || 'website visitor');
     var senders = [];
     var key = form.getAttribute('data-w3f-key');
     var email = form.getAttribute('data-fs-email');

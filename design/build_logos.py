@@ -148,10 +148,10 @@ def concept_d():
 
 
 concepts = {
-    "A — C + Snowflake": concept_a(),
-    "B — Shield Badge": concept_b(),
-    "C — Reefer Truck": concept_c(),
-    "D — Snowflake Wordmark": concept_d(),
+    "A: C + Snowflake": concept_a(),
+    "B: Shield Badge": concept_b(),
+    "C: Reefer Truck": concept_c(),
+    "D: Snowflake Wordmark": concept_d(),
 }
 for i, (name, s) in enumerate(concepts.items()):
     (OUT / f"concept-{'abcd'[i]}.svg").write_text(s, encoding="utf-8")

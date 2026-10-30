@@ -1,4 +1,4 @@
-/* Cobb Refrigerated Freight — site styles (v2) */
+/* Cobb Refrigerated Freight: site styles (v2) */
 :root {
   --midnight: #04122A;
   --navy-900: #061A3A;
@@ -63,7 +63,7 @@ strong { color: var(--ink); font-weight: 650; }
 .mono { font-family: var(--mono); font-feature-settings: "zero"; }
 .ico { width: 20px; height: 20px; flex: none; }
 
-/* Section labels: "01 — Who we are" */
+/* Section labels: "01 / Who we are" */
 .kicker {
   display: inline-flex; align-items: center; gap: 12px; margin-bottom: 22px;
   font: 600 12.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--blue);

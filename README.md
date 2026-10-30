@@ -1,4 +1,4 @@
-# Cobb Refrigerated Freight — Website
+# Cobb Refrigerated Freight Website
 
 Static website for **Cobb Refrigerated Freight Inc**, Modesto, CA (USDOT 145920 · MC-147824).
 
