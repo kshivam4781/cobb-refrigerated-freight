@@ -1,92 +1,206 @@
 // Cobb Refrigerated Freight — site behavior
 (function () {
-  var header = document.querySelector('.site-header');
-  var toggle = document.querySelector('.menu-toggle');
-  var nav = document.getElementById('site-nav');
+  var doc = document;
+  var body = doc.body;
+  var header = doc.querySelector('.site-header');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Mobile menu
+  // ---------- Header: transparent over the hero, solid once scrolled ----------
+  var alwaysSolid = body.getAttribute('data-header') === 'solid';
+  var callBar = doc.querySelector('.call-bar');
+  function onScroll() {
+    var y = window.scrollY;
+    if (header) header.classList.toggle('solid', alwaysSolid || y > 40);
+    if (callBar) callBar.classList.toggle('show', y > 520);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ---------- Mobile menu ----------
+  var toggle = doc.querySelector('.menu-toggle');
+  var nav = doc.getElementById('site-nav');
+  function setMenu(open) {
+    nav.classList.toggle('open', open);
+    body.classList.toggle('menu-open', open);
+    body.classList.toggle('lock', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    toggle.querySelector('use').setAttribute('href', open ? '#i-x' : '#i-menu');
+  }
   if (toggle && nav) {
-    toggle.addEventListener('click', function () {
-      var open = nav.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', String(open));
-    });
-    nav.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A') {
-        nav.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && nav.classList.contains('open')) {
-        nav.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-        toggle.focus();
-      }
-    });
+    toggle.addEventListener('click', function () { setMenu(!nav.classList.contains('open')); });
+    nav.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
   }
 
-  // Header shadow once the page scrolls
-  if (header) {
-    var onScroll = function () { header.classList.toggle('scrolled', window.scrollY > 8); };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+  // ---------- Services dropdown (click/keyboard; hover handled in CSS) ----------
+  doc.querySelectorAll('.nav-item > button').forEach(function (btn) {
+    var item = btn.parentElement;
+    btn.addEventListener('click', function () {
+      var open = !item.classList.contains('open');
+      item.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    item.addEventListener('focusout', function (e) {
+      if (!item.contains(e.relatedTarget) && window.innerWidth > 1024) {
+        item.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
+  doc.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (nav && nav.classList.contains('open')) { setMenu(false); toggle.focus(); }
+    doc.querySelectorAll('.nav-item.open').forEach(function (i) {
+      i.classList.remove('open');
+      i.querySelector('button').setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // ---------- Quote dialog ----------
+  var dialog = doc.getElementById('quote-dialog');
+  function openQuote(service) {
+    if (!dialog) return;
+    if (nav && nav.classList.contains('open')) setMenu(false);
+    var wrap = dialog.querySelector('[data-form-wrap]');
+    wrap.classList.remove('sent');
+    if (service) {
+      var sel = dialog.querySelector('select[name="service"]');
+      if (sel) sel.value = service;
+    }
+    if (typeof dialog.showModal === 'function') {
+      dialog.showModal();
+      body.classList.add('lock');
+    } else {
+      window.location.href = 'contact.html#quote';
+    }
+  }
+  doc.addEventListener('click', function (e) {
+    var opener = e.target.closest('[data-open-quote]');
+    if (opener) { e.preventDefault(); openQuote(opener.getAttribute('data-service')); }
+    if (e.target.closest('[data-close-quote]')) dialog.close();
+  });
+  if (dialog) {
+    dialog.addEventListener('close', function () { body.classList.remove('lock'); });
+    dialog.addEventListener('click', function (e) { if (e.target === dialog) dialog.close(); });
   }
 
-  // Reveal-on-scroll
-  var items = document.querySelectorAll('.reveal');
+  // ---------- Quote forms -> email (FormSubmit) ----------
+  doc.querySelectorAll('form[data-quote]').forEach(function (form) {
+    var wrap = form.closest('[data-form-wrap]');
+    var errorBox = form.querySelector('.form-error');
+    var submit = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errorBox.classList.remove('show');
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+
+      var data = {};
+      new FormData(form).forEach(function (value, key) { if (String(value).trim()) data[key] = String(value).trim(); });
+      if (data._honey) { wrap.classList.add('sent'); return; }
+
+      data._subject = 'Website quote request: ' + (data.service || 'General') + ' — ' + (data.name || '');
+      data._template = 'table';
+      data._captcha = 'false';
+      data.submitted_from = window.location.href;
+
+      submit.setAttribute('aria-busy', 'true');
+      fetch(form.getAttribute('data-endpoint'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(data)
+      })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (res) {
+          if (!res.ok || String(res.j.success) !== 'true') throw new Error(res.j.message || 'send failed');
+          form.reset();
+          wrap.classList.add('sent');
+        })
+        .catch(function () { errorBox.classList.add('show'); })
+        .finally(function () { submit.removeAttribute('aria-busy'); });
+    });
+  });
+  doc.querySelectorAll('[data-reset-form]').forEach(function (btn) {
+    btn.addEventListener('click', function () { btn.closest('[data-form-wrap]').classList.remove('sent'); });
+  });
+
+  // ---------- Services showcase tabs ----------
+  doc.querySelectorAll('[data-tabs]').forEach(function (root) {
+    var tabs = root.querySelectorAll('[role="tab"]');
+    var panels = root.querySelectorAll('[role="tabpanel"]');
+    function select(i, focus) {
+      tabs.forEach(function (t, j) {
+        var on = i === j;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        panels[j].classList.toggle('active', on);
+        panels[j].hidden = false;
+        panels[j].setAttribute('aria-hidden', String(!on));
+      });
+      if (focus) tabs[i].focus();
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { select(i); });
+      t.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); select((i + 1) % tabs.length, true); }
+        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); select((i - 1 + tabs.length) % tabs.length, true); }
+      });
+    });
+    select(0);
+  });
+
+  // ---------- Count-up numbers ----------
+  function countUp(el) {
+    var end = parseFloat(el.getAttribute('data-count'));
+    if (reduceMotion) { el.textContent = end.toLocaleString(); return; }
+    var start = performance.now(), dur = 1600;
+    (function tick(now) {
+      var p = Math.min((now - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 4);
+      el.textContent = Math.round(end * eased).toLocaleString();
+      if (p < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+
+  // ---------- Scroll-triggered effects ----------
+  var watched = doc.querySelectorAll('.reveal, [data-count], .lanes-map, .steps li');
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in');
-          io.unobserve(entry.target);
+        // Also reveal anything already scrolled past (fast scrolls, anchor jumps).
+        if (!entry.isIntersecting && entry.boundingClientRect.top > 0) return;
+        var el = entry.target;
+        el.classList.add('in');
+        if (el.hasAttribute('data-count')) countUp(el);
+        io.unobserve(el);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
+    watched.forEach(function (el) { io.observe(el); });
+  } else {
+    watched.forEach(function (el) { el.classList.add('in'); });
+  }
+
+  // ---------- Service page sub-nav highlighting ----------
+  var subLinks = doc.querySelectorAll('.subnav a');
+  if (subLinks.length && 'IntersectionObserver' in window) {
+    var map = {};
+    subLinks.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+    var so = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        subLinks.forEach(function (a) { a.classList.remove('active'); });
+        var link = map[entry.target.id];
+        if (link) {
+          link.classList.add('active');
+          var bar = link.parentElement;
+          bar.scrollTo({ left: link.offsetLeft - (bar.clientWidth - link.offsetWidth) / 2, behavior: reduceMotion ? 'auto' : 'smooth' });
         }
       });
-    }, { rootMargin: '0px 0px -60px 0px', threshold: 0.08 });
-    items.forEach(function (el) { io.observe(el); });
-  } else {
-    items.forEach(function (el) { el.classList.add('in'); });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    Object.keys(map).forEach(function (id) { var s = doc.getElementById(id); if (s) so.observe(s); });
   }
 
-  // Footer year
-  document.querySelectorAll('[data-year]').forEach(function (el) {
-    el.textContent = new Date().getFullYear();
-  });
-
-  // Quote form: only shown once a delivery endpoint is configured in data-endpoint
-  // (e.g. https://formsubmit.co/ajax/you@example.com). Until then, visitors see the call card.
-  var form = document.querySelector('[data-quote-form]');
-  if (form) {
-    var endpoint = form.getAttribute('data-endpoint');
-    var fallback = document.querySelector('[data-quote-fallback]');
-    if (endpoint) {
-      form.hidden = false;
-      if (fallback) fallback.hidden = true;
-      var status = form.querySelector('.form-status');
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (form.querySelector('.hp input').value) return;
-        var btn = form.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        status.className = 'form-status';
-        status.textContent = 'Sending…';
-        var data = Object.fromEntries(new FormData(form).entries());
-        delete data._hp;
-        data._subject = 'New quote request — cobb website';
-        fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify(data)
-        }).then(function (r) {
-          if (!r.ok) throw new Error(r.status);
-          form.reset();
-          status.className = 'form-status ok';
-          status.textContent = 'Thank you — your request was sent. We will be in touch shortly.';
-        }).catch(function () {
-          status.className = 'form-status err';
-          status.textContent = 'Sorry, that did not go through. Please call (209) 576-0327.';
-        }).finally(function () { btn.disabled = false; });
-      });
-    }
-  }
+  // ---------- Footer year ----------
+  doc.querySelectorAll('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });
 })();
