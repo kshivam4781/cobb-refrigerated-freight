@@ -27,10 +27,14 @@ The generated `*.html`, `sitemap.xml`, `robots.txt`, and `site.webmanifest` in t
 
 ### Quote forms
 
-Every quote form (hero card, quote dialog, contact page) emails requests to `QUOTE_EMAIL` in `build.py`. It sends through
-[Web3Forms](https://web3forms.com) when `WEB3FORMS_ACCESS_KEY` is set, and falls back to [FormSubmit](https://formsubmit.co), which emails the
-request to the address in `FORM_ENDPOINT` at the top of `build.py`. To change the recipient, edit that line, run
-`python build.py`, push, and confirm the one-time activation email FormSubmit sends to the new address.
+Every quote form (hero card, quote dialog, contact page) emails requests to `QUOTE_EMAIL` in `build.py`.
+
+1. **Web3Forms (primary):** sign in at [web3forms.com](https://web3forms.com), create an access key for `QUOTE_EMAIL`,
+   paste it into `WEB3FORMS_ACCESS_KEY` in `build.py`, run `python build.py`, and push.
+2. **FormSubmit (fallback):** used automatically if Web3Forms is not set up or fails. The first submission makes
+   FormSubmit send an "Activate Form" email to `QUOTE_EMAIL`; click it once to start receiving requests.
+
+If both fail, the visitor sees an error asking them to call (209) 576-0327, so nothing is silently lost.
 
 ### Custom domain
 
